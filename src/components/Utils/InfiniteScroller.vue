@@ -19,9 +19,37 @@ const props = withDefaults(
 const container = ref<HTMLDivElement | null>(null);
 const state = reactive({
     loading: false,
-    windowResize: false,
 });
-
+/**
+ * What does the InfiniteScroller do?
+ *  - It should loop ONLY through the data coming through updateFn()
+ *  - Using "scroll" event, the bottom position of the scroller is checked against the viewport --> see *conditionToRefetch()*
+ *  - When updateFn() triggers from "scroll" event, its sets: *loading=true*
+ *  - While *loading=true* --> "scroll" event is ignored!
+ * On data OK: (updateFn() fetched some data)
+ *  - In this case the container will get some new Nodes and it's size should increase and trigger 2 events:
+ *  [MutationObserver]
+ *   - This will set *loading=false* and tell the component that it can fetch some new data
+ *  [ResizeObserver]
+ *   - This will run EVERY time the container's SIZE changes --> window "resize" event can trigger this!
+ *   - This will ALSO RUN when component first mounts!
+ *   - If *loading=true* event exist immediately
+ *   - This event should fire when updateFn() successfully returns new data that is rendered in the scroller's container
+ *   - In this case this event will run because the container size changes dues to new nodes increasing the container's size
+ *   - A new check is done to see the scroller's bottom position agains the viewport --> *conditionToRefetch()*
+ *   - If it is ok, it will trigger updateFn() to get new data --> This will happen when the data from the first updateFn()
+ *     doesn't increase the scroller's height beyond the viewport's height --> The user won't be able to scroll on the page -->
+ *     --> The "scroll" event won't fire
+ *   - Eventually the scroller will be taller than the viewport and it's bottom position will be > window.innerHeight -->
+ *     --> User can scroll on the page --> "scroll" event will fire.
+ *
+ * [DANGER]
+ *  - If updateFn() doesn't return new data to be addedd to the scroller's container, state *loading=true* -->
+ *    --> The events that call updateFn "scrol" and ResizeObserver will never fire
+ *  - I guess in this case all data should be fetched and there is no point in scrolling.
+ *
+ *  - Scroller container should contain nodes made from updateFn()'s data, DON'T ADD OTHER NODES, add them outside the container.
+ */
 const conditionToRefetch = () => {
     // The scroller container bottom coordinate is smaller than the height of the viewport
     // And the scroller is in the viewport
@@ -49,54 +77,40 @@ function eventLoop(_e: Event) {
     }
 }
 
-/* Context:
- When data is fetched, it should be rendered inside the scroller and it's height should change accordingly.
- This will trigger the resizeObserver which will immediately set the loading state to false and allow new data to be fetched again
- It will also check if the data provided has increased the size of the scroller beyond that of the viewport
- If the scrollers height is smaller that the viewport, it will fetch new data until the scroller is taller than the viewport
-
- Basically I don't want to be in state where not enough data is sent from the updateFn and the user is never able to scroll down
- thus being unable to trigger the scroll event and fulfill the condition to fetch data.
-
- DANGER: if for some reason your updateFn() doesn't insert new data (maybe there is no more data to fetch)
- the updates end there because loading state will be set to true in the main event loop and since no data is
- fetched to be inserted in the scoller --> it doesn't change size --> loading state is never reset.
- In this case you should render a message on the FE like: "No more data to fetch". */
-let prevHeight = 0;
 const scrollerResizeObserver = new ResizeObserver((entries) => {
-    state.loading = false;
+    if (state.loading) return;
     for (const entry of entries) {
-        if (entry.target) {
-            if (state.windowResize && prevHeight === entry.target.getBoundingClientRect().height) {
-                state.windowResize = false;
-                return;
-            }
-            if (conditionToRefetch()) {
-                prevHeight = entry.target.getBoundingClientRect().height;
-                state.loading = true;
-                props.updateFn();
-                console.log("Infinite Scroller: updating @resizeObserver");
-            }
+        if (entry.target && conditionToRefetch()) {
+            state.loading = true;
+            props.updateFn();
+            console.log("Infinite Scroller: updating @resizeObserver");
         }
     }
 });
 
-function windowResizeEvent() {
-    state.windowResize = true;
-}
+/* Use MutationObserver to check if new nodes are addedd to the scroller
+   - This should happen when new data is fetched successfully! */
+const scrollerMutationObserver = new MutationObserver(
+    (mutationList, observer) => {
+        state.loading = false;
+    }
+);
 
 onMounted(() => {
     window.addEventListener("scroll", eventLoop);
-    window.addEventListener("resize", windowResizeEvent);
     if (container.value) {
         // This event automatically fires when scollerComponent mounts!
         scrollerResizeObserver.observe(container.value);
+        scrollerMutationObserver.observe(container.value, {
+            childList: true,
+            attributes: true,
+        });
     }
 });
 onUnmounted(() => {
     window.removeEventListener("scroll", eventLoop);
-    window.removeEventListener("resize", windowResizeEvent);
     scrollerResizeObserver.disconnect();
+    scrollerMutationObserver.disconnect();
 });
 </script>
 
