@@ -1,0 +1,24 @@
+@import "./ct.scss";
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body, html {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    font-size: $font-size;
+    font-family: $font-family;
+}
+
+a, button, label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.modal-open {
+    overflow: hidden;
+}
