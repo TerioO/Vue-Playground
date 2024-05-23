@@ -44,7 +44,6 @@ function handleEditUser(id: string){
 .userCard {
     @include paper(2);
     border-radius: 0.25rem;
-    margin: 0.5rem 0;
     padding: 1rem;
 
     .title {
