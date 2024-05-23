@@ -21,7 +21,7 @@ export const router = createRouter({
         },
         {
             path: "/users-list",
-            beforeEnter: guardAllowRoles(["USER", "ADMIN", "OWNER"]),
+            beforeEnter: guardAllowRoles(["ADMIN", "OWNER"]),
             component: () => import("../Views/UsersList.vue")
         },
         {
