@@ -3,6 +3,7 @@ import { useDelay } from "../hooks/useDelay";
 import { useAuthStore } from "./authStore";
 import { useApiStore } from "./apiStore";
 import { useToast } from "primevue/usetoast";
+import { useStore } from "./useStore";
 
 interface IPayloadRegister {
     username: string;
@@ -16,6 +17,7 @@ export interface IResMessage {
 }
 export const useAuthApiStore = defineStore("auth-api", () => {
     const { auth, setToken, logout: LOGOUT } = useAuthStore();
+    const { resetStore } = useStore();
     const { baseQuery, baseQueryWithAuth } = useApiStore();
     const toast = useToast();
 
@@ -26,6 +28,7 @@ export const useAuthApiStore = defineStore("auth-api", () => {
             data: payload
         });
         setToken(res.data.accessToken);
+        resetStore();
         toast.add({ 
             severity: "success",
             summary: "Success" ,

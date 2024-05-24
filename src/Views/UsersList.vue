@@ -4,12 +4,12 @@ import { useStore } from "../store/useStore";
 import { useFetchWrapper } from "../hooks/useFetchWrapper";
 import { useUserApiStore } from "../store/userApiStore";
 import ProgressBar from "primevue/progressbar";
-import InfiniteScroller from "../components/Utils/InfiniteScroller.vue";
+import InfiniteScrollerV2 from "../components/Utils/InfiniteScrollerV2.vue";
 import UserCard from "../components/UserCard.vue";
 
 const { store } = useStore();
 const { getUsers } = useUserApiStore();
-const { loading, error, data, trigger } = useFetchWrapper();
+const { loading, error, trigger } = useFetchWrapper();
 
 const limit = 3;
 const pag = reactive({
@@ -32,16 +32,17 @@ function getMoreUsers() {
 <template>
     <div :class="$style.usersList">
         <h1>Users List</h1>
-        <InfiniteScroller
-            :containerClass="$style.spinner"
-            :updateFn="getMoreUsers"
-        >
+        <InfiniteScrollerV2 
+            :containerClass="$style.scroller"
+            :threshold=".5"
+            :updateFn="getMoreUsers">
             <UserCard
                 v-for="(user, key) in Users"
                 :key="key"
-                :="user"
+                :user="user"
+                :containerClass="$style.userCard"
             />
-        </InfiniteScroller>
+        </InfiniteScrollerV2>
         <div :class="$style.spinnerInfo">
             <ProgressBar
                 v-if="loading"
@@ -62,12 +63,22 @@ function getMoreUsers() {
         margin-top: 0;
     }
 
-    .spinner {
+    .userCard {
+        min-width: 300px;
+    }
+
+    .scroller {
         @include center;
         display: grid;
         grid-template-columns: auto auto auto;
         column-gap: 1rem;
-        row-gap: 1rem;
+        row-gap: 5rem;
+        @media (width <= $br-PC) {
+            grid-template-columns: auto auto;
+        }
+        @media (width <= $br-tablet) {
+            grid-template-columns: auto;
+        }
     }
 
     .spinnerInfo {

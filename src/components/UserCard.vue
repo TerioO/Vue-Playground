@@ -6,9 +6,12 @@ import Button from "primevue/button";
 import dayjs from "dayjs";
 
 const router = useRouter();
-const { createdAt } = defineProps<IUser>();
+const { user } = defineProps<{
+    user: IUser,
+    containerClass?: string;
+}>();
 const createdAtDate = computed(() => {
-    return dayjs(createdAt).format("DD-MMM-YYYY HH:mm");
+    return dayjs(user.createdAt).format("DD-MMM-YYYY HH:mm");
 });
 
 function handleEditUser(id: string){
@@ -17,11 +20,11 @@ function handleEditUser(id: string){
 </script>
 
 <template>
-    <div :class="$style.userCard">
+    <div :class="[$style.userCard, containerClass]">
         <div :class="$style.title">
-            <h2>{{ username }}</h2>
+            <h2>{{ user.username }}</h2>
             <Button
-                @click="handleEditUser(_id)"
+                @click="handleEditUser(user._id)"
                 icon="pi pi-file-edit"
                 severity="secondary"
                 rounded
@@ -31,7 +34,7 @@ function handleEditUser(id: string){
         </div>
         <div :class="$style.details">
             <p>ROLE</p>
-            <p>{{ role }}</p>
+            <p>{{ user.role }}</p>
             <p>Created at</p>
             <p>{{ createdAtDate }}</p>
         </div>
@@ -50,8 +53,11 @@ function handleEditUser(id: string){
         display: flex;
         align-items: center;
         padding-bottom: 1rem;
+
         > h2 {
-            margin: 0;
+            margin: 0;        
+            @include textEllipsis;
+            flex: 1;
         }
 
         > button {

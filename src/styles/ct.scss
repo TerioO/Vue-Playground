@@ -21,31 +21,47 @@ $app-max-width: 70rem;
     margin: 0 auto;
     flex: 1;
 }
+
+@mixin textEllipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 @mixin paper($elevation) {
     $blur: 0px;
-    @if $elevation == 1 {
+
+    @if $elevation ==1 {
         $blur: 2px;
     }
-    @else if $elevation == 2 {
+
+    @else if $elevation ==2 {
         $blur: 4px;
     }
-    @else if $elevation == 3 {
+
+    @else if $elevation ==3 {
         $blur: 6px;
     }
-    @else if $elevation == 4 {
+
+    @else if $elevation ==4 {
         $blur: 8px;
     }
-    @else if $elevation == 5 {
+
+    @else if $elevation ==5 {
         $blur: 10px;
     }
-    @else if $elevation == 6 {
+
+    @else if $elevation ==6 {
         $blur: 12px;
     }
-    @else if $elevation == 7 {
+
+    @else if $elevation ==7 {
         $blur: 14px;
     }
-    @else if $elevation == 8 {
+
+    @else if $elevation ==8 {
         $blur: 16px;
     }
+
     box-shadow: 0px 0px $blur 0px rgba(114, 114, 114, 0.445);
 }

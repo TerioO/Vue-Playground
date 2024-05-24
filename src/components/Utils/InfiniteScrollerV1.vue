@@ -47,8 +47,11 @@ const state = reactive({
  *  - If updateFn() doesn't return new data to be addedd to the scroller's container, state *loading=true* -->
  *    --> The events that call updateFn "scrol" and ResizeObserver will never fire
  *  - I guess in this case all data should be fetched and there is no point in scrolling.
- *
+ *  - If the scroller's size doesn't change after new data is fetched, the updateFn() loop won't happen!
  *  - Scroller container should contain nodes made from updateFn()'s data, DON'T ADD OTHER NODES, add them outside the container.
+ * 
+ *  The issues can be fixed by making sure you fetch enough data on every updateFn()
+ *  and that the data inserted actually changes the size (height) of the scroller.
  */
 const conditionToRefetch = () => {
     // The scroller container bottom coordinate is smaller than the height of the viewport
@@ -78,7 +81,7 @@ function eventLoop(_e: Event) {
 }
 
 const scrollerResizeObserver = new ResizeObserver((entries) => {
-    if (state.loading) return;
+    if (state.loading) return; // If data wasn't fetched (No new nodes addedd to the scroller) exit immediately
     for (const entry of entries) {
         if (entry.target && conditionToRefetch()) {
             state.loading = true;
@@ -91,7 +94,7 @@ const scrollerResizeObserver = new ResizeObserver((entries) => {
 /* Use MutationObserver to check if new nodes are addedd to the scroller
    - This should happen when new data is fetched successfully! */
 const scrollerMutationObserver = new MutationObserver(
-    (mutationList, observer) => {
+    () => {
         state.loading = false;
     }
 );
@@ -120,11 +123,6 @@ onUnmounted(() => {
         :class="containerClass"
     >
         <slot>
-            <p>
-                This scroller will run an updateFn() every time the bottom
-                position of the container is smaller than the window height
-                minus a distance
-            </p>
         </slot>
     </div>
 </template>

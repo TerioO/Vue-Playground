@@ -35,7 +35,7 @@ export const useUserApiStore = defineStore("user-api", () => {
         return res;
     }
     async function getUsers({ limit, page }: IPagination) {
-        await useDelay(1);
+        // await useDelay(.5);
         const res = await baseQueryWithAuth<IResUsersList>(`/users/list?page=${page}&limit=${limit}`);
         addEntries("Users", res.data.users);
         return res;
