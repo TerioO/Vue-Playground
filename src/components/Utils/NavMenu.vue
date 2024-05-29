@@ -46,6 +46,17 @@ const menuItems = ref<MenuItem[]>([
         ],
     },
     {
+        label: "App",
+        visible: () => Boolean(auth.token),
+        items: [
+            {
+                label: "Create Post",
+                icon: "pi pi-file",
+                route: "/post/create"
+            }
+        ]
+    },
+    {
         label: "Profile",
         items: [
             {

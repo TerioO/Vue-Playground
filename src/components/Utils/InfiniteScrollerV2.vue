@@ -3,7 +3,6 @@ import { reactive, ref, onMounted, onUnmounted, withDefaults } from "vue";
 
 const props = withDefaults(
     defineProps<{
-        containerClass?: string;
         updateFn: () => void;
         // The element to compare intersection against, defaults to viewport
         root?: Element | null;
@@ -57,7 +56,6 @@ const mutObserver = new MutationObserver((mutationList) => {
         intObserver.unobserve(state.lastNode);
     }
     intObserver.observe(addedNodes[addedNodes.length - 1] as Element);
-    console.log(addedNodes[addedNodes.length - 1]);
     if (state.loading) state.loading = false;
 });
 
@@ -79,9 +77,8 @@ onUnmounted(() => {
 <template>
     <div
         ref="container"
-        :class="containerClass"
     >
-        <slot> </slot>
+        <slot></slot>
     </div>
 </template>
 

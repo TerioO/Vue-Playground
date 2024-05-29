@@ -131,6 +131,7 @@ onMounted(async () => {
     @include center;
 
     > h1 {
+        margin-top: 0;
         text-align: center;
         @media (width <= $br-phone) {
             margin-top: 0;

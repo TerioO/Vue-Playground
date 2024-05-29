@@ -19,6 +19,14 @@ export interface IUser extends IBaseEntity {
     createdAt: string;
     updatedAt: string;
 }
+export interface IPost extends IBaseEntity {
+    userId: string;
+    author: string;
+    title: string;
+    body: string;
+    createdAt: string;
+    updatedAt: string;
+}
 export interface IPagination {
     page?: number | undefined;
     limit?: number | undefined;

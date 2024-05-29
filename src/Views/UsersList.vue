@@ -12,7 +12,7 @@ const { getUsers } = useUserApiStore();
 const { loading, error, trigger } = useFetchWrapper();
 
 const limit = 3;
-const pag = reactive({
+const state = reactive({
     page: store.entities.Users
         ? Math.ceil(Object.keys(store.entities.Users).length / limit)
         : 0,
@@ -24,8 +24,8 @@ const Users = computed(() => {
 });
 
 function getMoreUsers() {
-    pag.page += 1;
-    trigger(() => getUsers({ page: pag.page, limit: pag.limit }));
+    state.page += 1;
+    trigger(() => getUsers({ page: state.page, limit: state.limit }));
 }
 </script>
 
@@ -33,7 +33,7 @@ function getMoreUsers() {
     <div :class="$style.usersList">
         <h1>Users List</h1>
         <InfiniteScrollerV2 
-            :containerClass="$style.scroller"
+            :class="$style.scroller"
             :threshold=".5"
             :updateFn="getMoreUsers">
             <UserCard
@@ -72,7 +72,7 @@ function getMoreUsers() {
         display: grid;
         grid-template-columns: auto auto auto;
         column-gap: 1rem;
-        row-gap: 5rem;
+        row-gap: 1rem;
         @media (width <= $br-PC) {
             grid-template-columns: auto auto;
         }

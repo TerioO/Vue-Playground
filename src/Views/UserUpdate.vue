@@ -154,6 +154,7 @@ onMounted(async () => {
 
 h1 {
     text-align: center;
+    margin-top: 0;
     @media (width <= $br-phone) {
         margin-top: 0;
     }

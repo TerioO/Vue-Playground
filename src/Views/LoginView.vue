@@ -66,6 +66,7 @@ watch(data, () => {
                 />
                 <label for="check">Remember me?</label>
             </div>
+            <p :class="$style.rememberMeInfo">If you don't check this, login session is lost on every page refresh or new window.</p>
             <p :class="$style.registerLink">
                 Not Registered?
                 <RouterLink to="/register">Create an account</RouterLink>
@@ -117,6 +118,11 @@ watch(data, () => {
         > p.registerLink {
             margin: 2rem 0 1rem 0;
             text-align: center;
+        }
+
+        p.rememberMeInfo {
+            font-size: 0.8rem;
+            margin: .25rem 0 0 0;
         }
 
         > p.error {

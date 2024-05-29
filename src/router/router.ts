@@ -13,12 +13,19 @@ export const router = createRouter({
         { path: "/login", component: () => import("../Views/LoginView.vue") },
         { path: "/register", component: () => import("../Views/RegisterView.vue") },
 
-        // Protected Routes:
+        // USER Routes:
         {
             path: "/profile",
             beforeEnter: guardAllowRoles(["USER", "ADMIN", "OWNER"]),
             component: () => import("../Views/ProfileView.vue")
         },
+        {
+            path: "/post/create",
+            beforeEnter: guardAllowRoles(["USER", "ADMIN", "OWNER"]),
+            component: () => import("../Views/PostCreate.vue")
+        },
+
+        // ADMINs && OWNERs Routes:
         {
             path: "/users-list",
             beforeEnter: guardAllowRoles(["ADMIN", "OWNER"]),
@@ -27,8 +34,9 @@ export const router = createRouter({
         {
             path: "/update-user/:id",
             beforeEnter: guardAllowRoles(["ADMIN", "OWNER"]),
-            component: () => import("../Views/UpdateUser.vue")
+            component: () => import("../Views/UserUpdate.vue")
         },
+
 
         // 404 Page:
         { path: "/:pathMatch(.*)*", component: () => import("../Views/_404View.vue") }
